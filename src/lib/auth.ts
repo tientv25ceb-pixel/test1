@@ -51,6 +51,7 @@ const providers: Provider[] = [
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
+  trustHost: true,
   callbacks: {
     async signIn({ user }) {
       const email = user.email ?? ""
