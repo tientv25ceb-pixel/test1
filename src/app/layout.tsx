@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import DecorativeGrid from "@/components/decorative/decorative-grid";
+import SessionProvider from "@/components/auth/session-provider";
+import SessionSync from "@/components/auth/session-sync";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"] });
@@ -16,8 +19,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className={`${outfit.className} antialiased`}>
-        {children}
+      <body className={`${outfit.className} antialiased relative`}>
+        <DecorativeGrid />
+        <div className="relative z-10">
+          <SessionProvider>
+            <SessionSync />
+            {children}
+          </SessionProvider>
+        </div>
       </body>
     </html>
   );

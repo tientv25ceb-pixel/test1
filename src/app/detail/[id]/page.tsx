@@ -4,17 +4,28 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
+import QRModal from '@/components/qr-modal';
+import DragonBridge from '@/components/decorative/dragon-bridge';
+import WaveBackground from '@/components/decorative/wave-background';
 import { useStore } from '@/lib/store';
 import { CATEGORY_MAP, CONDITION_LABELS } from '@/lib/data';
 import Image from 'next/image';
-import { MapPin, Clock, ArrowLeft, Share2, MessageCircle, AlertCircle, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { MapPin, Clock, ArrowLeft, Share2, MessageCircle, AlertCircle, ShieldCheck, Heart, Check, X, QrCode } from 'lucide-react';
 
 export default function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
-  const items = useStore(state => state.items);
+  const { items, currentUser, sendRequest, requests, favorites, toggleFavorite, startConversation } = useStore();
+  const [toast, setToast] = useState('');
+  const [showQR, setShowQR] = useState(false);
   const item = items.find(i => i.id === id);
-  const [requestSent, setRequestSent] = useState(false);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(''), 2500);
+  };
 
   if (!item) {
     return (
@@ -33,18 +44,62 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   const cat = CATEGORY_MAP[item.category];
+  const isOwner = currentUser && item.posterId === currentUser.id;
+  const hasRequested = currentUser ? requests.some(r => r.itemId === item.id && r.requesterId === currentUser.id) : false;
+  const myRequest = currentUser ? requests.find(r => r.itemId === item.id && r.requesterId === currentUser.id) : null;
+  const isFavorited = favorites.includes(item.id);
+  const requestStatus = myRequest?.status;
+
+  const handleRequest = async () => {
+    if (!currentUser) return;
+    try {
+      await sendRequest(item.id);
+      showToast('Đã gửi yêu cầu nhận đồ!');
+    } catch { showToast('Lỗi khi gửi yêu cầu'); }
+  };
+
+  const handleChat = async () => {
+    if (!currentUser) return;
+    try {
+      const convId = await startConversation(item.posterId || '', item.postedBy, item.id, item.title);
+      window.open(`/chat/${convId}`, '_blank');
+    } catch { showToast('Lỗi khi tạo hội thoại'); }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      await navigator.share({ title: item.title, url });
+    } else {
+      await navigator.clipboard.writeText(url);
+      showToast('Đã copy link!');
+    }
+  };
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col relative overflow-hidden">
       <Header />
-      <div className="flex-grow pt-28 pb-16">
+      <DragonBridge className="absolute bottom-0 right-0 w-[180px] h-[80px] opacity-30 hidden md:block" />
+      <WaveBackground className="absolute top-60 left-0 opacity-30" opacity={0.03} />
+
+      {toast && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-full shadow-lg text-sm font-medium"
+        >
+          {toast}
+        </motion.div>
+      )}
+
+      <div className="flex-grow pt-28 pb-16 relative z-10">
         <div className="container mx-auto px-4 md:px-6 max-w-5xl">
           <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] font-medium mb-6 transition-colors">
             <ArrowLeft size={18} /> Quay lại
           </button>
 
           <div className="card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
-            {/* Image */}
             <div className="w-full lg:w-1/2 relative min-h-[350px] lg:min-h-[550px] bg-[hsl(var(--secondary))]">
               <Image src={item.image} alt={item.title} fill className="object-cover" priority />
               <div className="absolute top-4 left-4 flex gap-2">
@@ -53,9 +108,14 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
                 </span>
                 {item.isFeatured && <span className="badge bg-amber-400 text-amber-900 shadow-lg">⭐ Nổi bật</span>}
               </div>
+              <button
+                onClick={() => { toggleFavorite(item.id); showToast(isFavorited ? 'Đã bỏ yêu thích' : 'Đã thêm yêu thích'); }}
+                className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+              >
+                <Heart size={20} className={isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
+              </button>
             </div>
 
-            {/* Details */}
             <div className="w-full lg:w-1/2 p-6 md:p-10 flex flex-col">
               <div className="flex items-center gap-2 mb-5">
                 <span className="badge badge-blue">{cat.emoji} {cat.label}</span>
@@ -93,16 +153,41 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
               </div>
 
               <div className="flex gap-3 mt-auto">
-                {requestSent ? (
+                {!currentUser ? (
+                  <Link href="/" className="flex-1 btn-primary justify-center py-3 text-sm">
+                    <MessageCircle size={18} /> Đăng nhập để yêu cầu
+                  </Link>
+                ) : isOwner ? (
+                  <Link href="/requests" className="flex-1 btn-outline justify-center py-3 text-sm">
+                    <ShieldCheck size={18} /> Quản lý yêu cầu
+                  </Link>
+                ) : hasRequested && requestStatus === 'pending' ? (
                   <button disabled className="flex-1 py-3 rounded-xl bg-green-100 text-green-700 font-bold text-sm flex items-center justify-center gap-2">
-                    <ShieldCheck size={20} /> Đã gửi yêu cầu
+                    <Clock size={20} /> Đã gửi yêu cầu
+                  </button>
+                ) : hasRequested && requestStatus === 'accepted' ? (
+                  <button disabled className="flex-1 py-3 rounded-xl bg-blue-100 text-blue-700 font-bold text-sm flex items-center justify-center gap-2">
+                    <Check size={20} /> Đã được duyệt
+                  </button>
+                ) : hasRequested && requestStatus === 'rejected' ? (
+                  <button disabled className="flex-1 py-3 rounded-xl bg-red-100 text-red-700 font-bold text-sm flex items-center justify-center gap-2">
+                    <X size={20} /> Đã từ chối
                   </button>
                 ) : (
-                  <button onClick={() => setRequestSent(true)} className="flex-1 btn-primary justify-center py-3 text-sm">
+                  <button onClick={handleRequest} className="flex-1 btn-primary justify-center py-3 text-sm">
                     <MessageCircle size={18} /> Gửi yêu cầu nhận
                   </button>
                 )}
-                <button className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors">
+
+                {currentUser && !isOwner && (
+                  <button onClick={handleChat} className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors" title="Nhắn tin">
+                    <MessageCircle size={18} />
+                  </button>
+                )}
+                <button onClick={() => setShowQR(true)} className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors" title="Mã QR">
+                  <QrCode size={18} />
+                </button>
+                <button onClick={handleShare} className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors" title="Chia sẻ">
                   <Share2 size={18} />
                 </button>
               </div>
@@ -111,6 +196,8 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
         </div>
       </div>
       <Footer />
+
+      <QRModal isOpen={showQR} onClose={() => setShowQR(false)} url={typeof window !== 'undefined' ? window.location.href : ''} title={item.title} />
     </main>
   );
 }

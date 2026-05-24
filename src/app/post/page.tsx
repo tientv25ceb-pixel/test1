@@ -2,16 +2,38 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
+import MountainRange from '@/components/decorative/mountain-range';
 import { useStore } from '@/lib/store';
 import { CATEGORY_LABELS, Category, CONDITION_LABELS, Condition, LOCATIONS, ExchangeType } from '@/lib/data';
-import { Camera, CheckCircle2, Gift, MapPin, Upload } from 'lucide-react';
+import { uploadImage } from '@/lib/api';
+import { Camera, CheckCircle2, Gift, MapPin, Upload, Loader } from 'lucide-react';
 
 export default function PostPage() {
   const router = useRouter();
   const addItem = useStore(state => state.addItem);
+  const currentUser = useStore(state => state.currentUser);
   const [submitted, setSubmitted] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  if (!currentUser) {
+    return (
+      <main className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-grow flex items-center justify-center p-4">
+          <div className="text-center card rounded-2xl p-10 max-w-sm">
+            <div className="text-5xl mb-4">🔒</div>
+            <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
+            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-6">Bạn cần đăng nhập để đăng món đồ.</p>
+            <Link href="/" className="btn-primary">Về trang chủ</Link>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
 
   const [form, setForm] = useState({
     title: '',
@@ -20,73 +42,56 @@ export default function PostPage() {
     condition: '' as Condition | '',
     exchangeType: 'mienphi' as ExchangeType,
     location: '',
-    postedBy: '',
-    posterFaculty: '',
-    image: ''
+    image: '',
+    imageFile: null as File | null,
   });
 
-  const isFormValid = form.title && form.description && form.category && form.condition && form.location && form.postedBy && form.image;
+  const isFormValid = form.title && form.description && form.category && form.condition && form.location && form.image;
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new window.Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 800;
-        let width = img.width;
-        let height = img.height;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ảnh không được quá 5MB')
+      return
+    }
 
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
-        
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-        setForm(prev => ({ ...prev, image: dataUrl }));
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+    setUploading(true)
+    try {
+      const { url } = await uploadImage(file)
+      setForm(prev => ({ ...prev, image: url, imageFile: file }))
+    } catch (err) {
+      alert('Upload ảnh thất bại, vui lòng thử lại')
+    } finally {
+      setUploading(false)
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
-    addItem({
-      title: form.title,
-      description: form.description,
-      category: form.category as Category,
-      condition: form.condition as Condition,
-      exchangeType: form.exchangeType,
-      location: form.location,
-      postedBy: form.postedBy,
-      posterFaculty: form.posterFaculty,
-      image: form.image
-    });
-    setSubmitted(true);
+    if (!isFormValid || !currentUser) return;
+    try {
+      await addItem({
+        title: form.title,
+        description: form.description,
+        category: form.category as Category,
+        condition: form.condition as Condition,
+        exchangeType: form.exchangeType,
+        location: form.location,
+        image: form.image,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      alert('Đăng bài thất bại, vui lòng thử lại')
+    }
   };
 
   if (submitted) {
     return (
-      <main className="min-h-screen flex flex-col">
+      <main className="min-h-screen flex flex-col relative overflow-hidden">
         <Header />
+        <MountainRange className="absolute bottom-0 left-0 w-full h-[80px] opacity-40" />
         <div className="flex-grow flex items-center justify-center p-4">
           <div className="card p-10 rounded-2xl max-w-md w-full text-center animate-in">
             <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><CheckCircle2 size={40} /></div>
@@ -104,9 +109,10 @@ export default function PostPage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col relative overflow-hidden">
       <Header />
-      <div className="flex-grow pt-28 pb-16">
+      <MountainRange className="absolute bottom-0 left-0 w-full h-[80px] opacity-40" />
+      <div className="flex-grow pt-28 pb-16 relative z-10">
         <div className="container mx-auto px-4 md:px-6 max-w-3xl">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold mb-2">Tặng & Trao đổi đồ</h1>
@@ -158,8 +164,10 @@ export default function PostPage() {
                 <div>
                   <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Hình ảnh *</label>
                   <label className="w-full h-[100px] rounded-xl border-2 border-dashed border-[hsl(var(--border))] bg-[hsl(var(--secondary))] flex flex-col items-center justify-center text-[hsl(var(--muted-foreground))] cursor-pointer hover:border-[hsl(var(--primary)/0.3)] transition-colors overflow-hidden relative">
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                    {form.image ? (
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                    {uploading ? (
+                      <Loader size={24} className="animate-spin mb-1.5 opacity-50" />
+                    ) : form.image ? (
                       <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
                       <>
@@ -172,25 +180,13 @@ export default function PostPage() {
               </div>
             </div>
 
-            <div className="border-t border-[hsl(var(--border))] pt-6 grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="space-y-5">
-                <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Tên người đăng *</label>
-                  <input type="text" required placeholder="VD: Nguyễn Văn A" className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.postedBy} onChange={e => setForm({ ...form, postedBy: e.target.value })} />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Trường / Khoa (Tùy chọn)</label>
-                  <input type="text" placeholder="VD: CNTT - ĐH Bách Khoa" className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.posterFaculty} onChange={e => setForm({ ...form, posterFaculty: e.target.value })} />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MapPin size={14} className="text-[hsl(var(--primary))]" /> Địa điểm hẹn lấy đồ *</label>
-                <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })}>
-                  <option value="" disabled>Chọn một điểm hẹn công cộng</option>
-                  {LOCATIONS.map(loc => (<option key={loc} value={loc}>{loc}</option>))}
-                </select>
-                <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1.5">Vui lòng chọn các địa điểm công cộng trong Làng Đại học.</p>
-              </div>
+            <div className="border-t border-[hsl(var(--border))] pt-6 mb-6">
+              <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MapPin size={14} className="text-[hsl(var(--primary))]" /> Địa điểm hẹn lấy đồ *</label>
+              <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })}>
+                <option value="" disabled>Chọn một điểm hẹn công cộng</option>
+                {LOCATIONS.map(loc => (<option key={loc} value={loc}>{loc}</option>))}
+              </select>
+              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1.5">Vui lòng chọn các địa điểm công cộng trong Làng Đại học.</p>
             </div>
 
             <button type="submit" disabled={!isFormValid}

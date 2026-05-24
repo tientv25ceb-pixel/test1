@@ -17,6 +17,45 @@ export interface Item {
   createdAt: string;
   requestedCount: number;
   isFeatured?: boolean;
+  posterId?: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  faculty: string;
+  avatar?: string;
+}
+
+export interface Request {
+  id: string;
+  itemId: string;
+  itemTitle: string;
+  requesterId: string;
+  requesterName: string;
+  posterName: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'collected';
+  createdAt: string;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface Conversation {
+  id: string;
+  participantIds: string[];
+  participantNames: string[];
+  itemId: string;
+  itemTitle: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  unread: number;
 }
 
 export const CATEGORY_MAP: Record<Category, { label: string; emoji: string; bg: string }> = {

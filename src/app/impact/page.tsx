@@ -2,6 +2,8 @@
 
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
+import WaveBackground from '@/components/decorative/wave-background';
+import MountainRange from '@/components/decorative/mountain-range';
 import { motion } from 'framer-motion';
 import { Leaf, Users, Gift, TrendingUp, Heart } from 'lucide-react';
 
@@ -14,9 +16,11 @@ const STATS = [
 
 export default function ImpactPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-background">
+    <main className="min-h-screen flex flex-col relative overflow-hidden">
       <Header />
-      <div className="flex-grow pt-28 pb-16">
+      <WaveBackground className="absolute top-40 left-0 opacity-40" opacity={0.04} />
+      <MountainRange className="absolute bottom-0 left-0 w-full h-[80px] opacity-50" />
+      <div className="flex-grow pt-28 pb-16 relative z-10">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="badge badge-rose mb-5 mx-auto">

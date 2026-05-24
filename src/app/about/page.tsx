@@ -2,13 +2,14 @@
 
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
+import MountainRange from '@/components/decorative/mountain-range';
 import { motion } from 'framer-motion';
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-background">
+    <main className="min-h-screen flex flex-col bg-background relative overflow-hidden">
       <Header />
-      
+      <MountainRange className="absolute bottom-0 left-0 w-full h-[100px] opacity-60" />
       <div className="flex-grow pt-32 pb-20">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl text-center">
           
