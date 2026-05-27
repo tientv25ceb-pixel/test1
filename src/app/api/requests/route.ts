@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase"
 import { getAuthUser, unauthorized, badRequest, ok, created } from "@/lib/api-helpers"
 
 export async function GET(request: NextRequest) {
-  const user = await getAuthUser()
+  const user = await getAuthUser(request)
   if (!user) return unauthorized()
 
   const { searchParams } = new URL(request.url)
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthUser()
+  const user = await getAuthUser(request)
   if (!user) return unauthorized()
 
   const body = await request.json()

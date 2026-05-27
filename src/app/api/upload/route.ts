@@ -1,12 +1,17 @@
 import { NextRequest } from "next/server"
 import { supabase } from "@/lib/supabase"
+import { auth } from "@/lib/auth"
 import { getAuthUser, unauthorized, badRequest, ok } from "@/lib/api-helpers"
 
-export async function POST(request: NextRequest) {
-  const user = await getAuthUser()
+export async function POST(req: NextRequest) {
+  const session = await auth()
+  console.log("--- UPLOAD API DEBUG ---")
+  console.log("Session:", JSON.stringify(session))
+  const user = await getAuthUser(req)
+  console.log("User:", JSON.stringify(user))
   if (!user) return unauthorized()
 
-  const formData = await request.formData()
+  const formData = await req.formData()
   const file = formData.get("file") as File | null
   if (!file) return badRequest("No file provided")
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import QRModal from '@/components/qr-modal';
+import GiftAnimation from '@/components/decorative/gift-animation';
 import DragonBridge from '@/components/decorative/dragon-bridge';
 import WaveBackground from '@/components/decorative/wave-background';
 import { useStore } from '@/lib/store';
@@ -20,6 +21,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
   const { items, currentUser, sendRequest, requests, favorites, toggleFavorite, startConversation } = useStore();
   const [toast, setToast] = useState('');
   const [showQR, setShowQR] = useState(false);
+  const [showGift, setShowGift] = useState(false);
   const item = items.find(i => i.id === id);
 
   const showToast = (msg: string) => {
@@ -35,7 +37,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
           <div className="text-center">
             <div className="text-5xl mb-4">😢</div>
             <h2 className="text-xl font-bold mb-2">Không tìm thấy món đồ</h2>
-            <button onClick={() => router.push('/items')} className="text-sm text-[hsl(var(--primary))] hover:underline font-medium">← Quay lại trang khám phá</button>
+            <button onClick={() => router.push('/items')} className="text-sm text-[var(--primary)] hover:underline font-medium">← Quay lại trang khám phá</button>
           </div>
         </div>
         <Footer />
@@ -54,7 +56,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
     if (!currentUser) return;
     try {
       await sendRequest(item.id);
-      showToast('Đã gửi yêu cầu nhận đồ!');
+      setShowGift(true);
     } catch { showToast('Lỗi khi gửi yêu cầu'); }
   };
 
@@ -95,12 +97,12 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
 
       <div className="flex-grow pt-28 pb-16 relative z-10">
         <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-          <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] font-medium mb-6 transition-colors">
+              <button onClick={() => router.back()} className="flex items-center gap-1.5 text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] font-medium mb-6 transition-colors">
             <ArrowLeft size={18} /> Quay lại
           </button>
 
           <div className="card rounded-2xl overflow-hidden flex flex-col lg:flex-row">
-            <div className="w-full lg:w-1/2 relative min-h-[350px] lg:min-h-[550px] bg-[hsl(var(--secondary))]">
+            <div className="w-full lg:w-1/2 relative min-h-[350px] lg:min-h-[550px] bg-[var(--secondary)]">
               <Image src={item.image} alt={item.title} fill className="object-cover" priority />
               <div className="absolute top-4 left-4 flex gap-2">
                 <span className={`badge text-white shadow-lg ${item.exchangeType === 'mienphi' ? 'bg-green-500' : 'bg-blue-500'}`}>
@@ -124,30 +126,30 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
 
               <h1 className="text-2xl md:text-3xl font-bold mb-4">{item.title}</h1>
 
-              <div className="flex flex-wrap items-center gap-5 text-xs text-[hsl(var(--muted-foreground))] font-medium mb-6 pb-6 border-b border-[hsl(var(--border))]">
+              <div className="flex flex-wrap items-center gap-5 text-xs text-[var(--muted-foreground)] font-medium mb-6 pb-6 border-b border-[var(--border)]">
                 <span className="flex items-center gap-1.5"><Clock size={14} /> Đăng ngày: {item.createdAt}</span>
                 <span className="flex items-center gap-1.5"><AlertCircle size={14} /> {item.requestedCount} người đã yêu cầu</span>
               </div>
 
               <div className="mb-6 flex-grow">
-                <h3 className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-3">Mô tả chi tiết</h3>
-                <p className="text-sm leading-relaxed text-[hsl(var(--foreground)/0.8)]">{item.description}</p>
+                <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Mô tả chi tiết</h3>
+                <p className="text-sm leading-relaxed text-[color-mix(in_oklch,_var(--foreground)_80%,_transparent)]">{item.description}</p>
               </div>
 
-              <div className="bg-[hsl(var(--secondary))] rounded-2xl p-5 mb-6">
-                <h3 className="text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-4">Thông tin người đăng</h3>
+              <div className="bg-[var(--secondary)] rounded-2xl p-5 mb-6">
+                <h3 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-4">Thông tin người đăng</h3>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-11 w-11 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-base">{item.postedBy.charAt(0)}</div>
                   <div>
                     <p className="font-bold text-sm">{item.postedBy}</p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">{item.posterFaculty || 'Sinh viên Đà Nẵng'}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">{item.posterFaculty || 'Sinh viên Đà Nẵng'}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2 text-sm">
-                  <MapPin size={16} className="text-[hsl(var(--primary))] mt-0.5 shrink-0" />
+                  <MapPin size={16} className="text-[var(--primary)] mt-0.5 shrink-0" />
                   <div>
                     <p className="font-semibold text-xs">Điểm hẹn</p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">{item.location}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">{item.location}</p>
                   </div>
                 </div>
               </div>
@@ -180,14 +182,14 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
                 )}
 
                 {currentUser && !isOwner && (
-                  <button onClick={handleChat} className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors" title="Nhắn tin">
+                  <button onClick={handleChat} className="px-4 py-3 rounded-xl bg-[var(--secondary)] hover:bg-[var(--border)] transition-colors" aria-label="Nhắn tin cho người đăng">
                     <MessageCircle size={18} />
                   </button>
                 )}
-                <button onClick={() => setShowQR(true)} className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors" title="Mã QR">
+                <button onClick={() => setShowQR(true)} className="px-4 py-3 rounded-xl bg-[var(--secondary)] hover:bg-[var(--border)] transition-colors" aria-label="Xem mã QR">
                   <QrCode size={18} />
                 </button>
-                <button onClick={handleShare} className="px-4 py-3 rounded-xl bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--border))] transition-colors" title="Chia sẻ">
+                <button onClick={handleShare} className="px-4 py-3 rounded-xl bg-[var(--secondary)] hover:bg-[var(--border)] transition-colors" aria-label="Chia sẻ">
                   <Share2 size={18} />
                 </button>
               </div>
@@ -198,6 +200,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
       <Footer />
 
       <QRModal isOpen={showQR} onClose={() => setShowQR(false)} url={typeof window !== 'undefined' ? window.location.href : ''} title={item.title} />
+      <GiftAnimation show={showGift} onClose={() => setShowGift(false)} />
     </main>
   );
 }

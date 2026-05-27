@@ -18,10 +18,10 @@ export default function DecorativeGrid({ className = '' }: { className?: string 
             patternUnits="userSpaceOnUse"
           >
             {/* Grid lines */}
-            <line x1="0" y1="0" x2="60" y2="0" stroke="hsl(221 83% 53% / 0.03)" strokeWidth="0.5" />
-            <line x1="0" y1="0" x2="0" y2="60" stroke="hsl(221 83% 53% / 0.03)" strokeWidth="0.5" />
+            <line x1="0" y1="0" x2="60" y2="0" stroke="color-mix(in oklch, oklch(0.55 0.20 255) 3%, transparent)" strokeWidth="0.5" />
+            <line x1="0" y1="0" x2="0" y2="60" stroke="color-mix(in oklch, oklch(0.55 0.20 255) 3%, transparent)" strokeWidth="0.5" />
             {/* Intersection dot */}
-            <circle cx="0" cy="0" r="1" fill="hsl(221 83% 53% / 0.05)" />
+            <circle cx="0" cy="0" r="1" fill="color-mix(in oklch, oklch(0.55 0.20 255) 5%, transparent)" />
           </pattern>
           <radialGradient id="grid-fade" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="white" stopOpacity="1" />

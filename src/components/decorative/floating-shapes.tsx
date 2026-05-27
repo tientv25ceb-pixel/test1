@@ -14,14 +14,14 @@ interface Shape {
 }
 
 const SHAPES: Shape[] = [
-  { type: 'cube', size: 35, x: '8%', y: '15%', color: 'hsl(221 83% 53% / VAR)', duration: 22, delay: 0, opacity: 0.12 },
-  { type: 'ring', size: 50, x: '85%', y: '20%', color: 'hsl(199 89% 48% / VAR)', duration: 18, delay: -4, opacity: 0.1 },
-  { type: 'sphere', size: 25, x: '15%', y: '70%', color: 'hsl(270 80% 60% / VAR)', duration: 25, delay: -8, opacity: 0.15 },
-  { type: 'pyramid', size: 30, x: '75%', y: '65%', color: 'hsl(142 76% 36% / VAR)', duration: 20, delay: -2, opacity: 0.1 },
-  { type: 'cube', size: 20, x: '50%', y: '10%', color: 'hsl(199 89% 48% / VAR)', duration: 30, delay: -12, opacity: 0.08 },
-  { type: 'ring', size: 35, x: '92%', y: '55%', color: 'hsl(221 83% 53% / VAR)', duration: 24, delay: -6, opacity: 0.1 },
-  { type: 'sphere', size: 18, x: '40%', y: '80%', color: 'hsl(38 92% 50% / VAR)', duration: 28, delay: -10, opacity: 0.12 },
-  { type: 'pyramid', size: 22, x: '25%', y: '35%', color: 'hsl(350 80% 55% / VAR)', duration: 26, delay: -15, opacity: 0.08 },
+  { type: 'cube', size: 35, x: '8%', y: '15%', color: 'oklch(0.55 0.20 255 / VAR)', duration: 22, delay: 0, opacity: 0.12 },
+  { type: 'ring', size: 50, x: '85%', y: '20%', color: 'oklch(0.60 0.18 200 / VAR)', duration: 18, delay: -4, opacity: 0.1 },
+  { type: 'sphere', size: 25, x: '15%', y: '70%', color: 'oklch(0.55 0.20 300 / VAR)', duration: 25, delay: -8, opacity: 0.15 },
+  { type: 'pyramid', size: 30, x: '75%', y: '65%', color: 'oklch(0.55 0.20 145 / VAR)', duration: 20, delay: -2, opacity: 0.1 },
+  { type: 'cube', size: 20, x: '50%', y: '10%', color: 'oklch(0.60 0.18 200 / VAR)', duration: 30, delay: -12, opacity: 0.08 },
+  { type: 'ring', size: 35, x: '92%', y: '55%', color: 'oklch(0.55 0.20 255 / VAR)', duration: 24, delay: -6, opacity: 0.1 },
+  { type: 'sphere', size: 18, x: '40%', y: '80%', color: 'oklch(0.65 0.18 80 / VAR)', duration: 28, delay: -10, opacity: 0.12 },
+  { type: 'pyramid', size: 22, x: '25%', y: '35%', color: 'oklch(0.60 0.20 360 / VAR)', duration: 26, delay: -15, opacity: 0.08 },
 ];
 
 function Cube({ size, color, opacity }: { size: number; color: string; opacity: number }) {

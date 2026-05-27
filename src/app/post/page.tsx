@@ -17,24 +17,6 @@ export default function PostPage() {
   const currentUser = useStore(state => state.currentUser);
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
-
-  if (!currentUser) {
-    return (
-      <main className="min-h-screen flex flex-col">
-        <Header />
-        <div className="flex-grow flex items-center justify-center p-4">
-          <div className="text-center card rounded-2xl p-10 max-w-sm">
-            <div className="text-5xl mb-4">🔒</div>
-            <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-6">Bạn cần đăng nhập để đăng món đồ.</p>
-            <Link href="/" className="btn-primary">Về trang chủ</Link>
-          </div>
-        </div>
-        <Footer />
-      </main>
-    );
-  }
-
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -45,6 +27,23 @@ export default function PostPage() {
     image: '',
     imageFile: null as File | null,
   });
+
+  if (!currentUser) {
+    return (
+      <main className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-grow flex items-center justify-center p-4">
+          <div className="auth-gate">
+            <div className="text-5xl mb-4">🔒</div>
+            <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
+            <p className="text-sm text-[var(--muted-foreground)] mb-6">Bạn cần đăng nhập để đăng món đồ.</p>
+            <Link href="/" className="btn-primary">Về trang chủ</Link>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
 
   const isFormValid = form.title && form.description && form.category && form.condition && form.location && form.image;
 
@@ -61,8 +60,8 @@ export default function PostPage() {
     try {
       const { url } = await uploadImage(file)
       setForm(prev => ({ ...prev, image: url, imageFile: file }))
-    } catch (err) {
-      alert('Upload ảnh thất bại, vui lòng thử lại')
+    } catch (err: any) {
+      alert(`Upload ảnh thất bại: ${err.message || 'vui lòng thử lại'}`)
     } finally {
       setUploading(false)
     }
@@ -96,7 +95,7 @@ export default function PostPage() {
           <div className="card p-10 rounded-2xl max-w-md w-full text-center animate-in">
             <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><CheckCircle2 size={40} /></div>
             <h2 className="text-2xl font-bold mb-3">Đăng bài thành công!</h2>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-8">Cảm ơn bạn đã chia sẻ. Món đồ của bạn đang hiển thị trên trang Khám phá.</p>
+            <p className="text-sm text-[var(--muted-foreground)] mb-8">Cảm ơn bạn đã chia sẻ. Món đồ của bạn đang hiển thị trên trang Khám phá.</p>
             <div className="flex flex-col gap-3">
               <button onClick={() => router.push('/items')} className="btn-primary justify-center w-full py-3">Xem danh sách món đồ</button>
               <button onClick={() => { setSubmitted(false); setForm({ ...form, title: '', description: '' }); }} className="btn-outline justify-center w-full py-3">Đăng thêm món đồ khác</button>
@@ -116,20 +115,20 @@ export default function PostPage() {
         <div className="container mx-auto px-4 md:px-6 max-w-3xl">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold mb-2">Tặng & Trao đổi đồ</h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Chia sẻ vật dụng bạn không còn cần tới cho cộng đồng sinh viên Đà Nẵng.</p>
+            <p className="text-sm text-[var(--muted-foreground)]">Chia sẻ vật dụng bạn không còn cần tới cho cộng đồng sinh viên Đà Nẵng.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="card p-6 md:p-8 rounded-2xl">
             {/* Hình thức */}
             <div className="mb-6">
-              <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-3">Hình thức chia sẻ *</label>
+              <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-3">Hình thức chia sẻ *</label>
               <div className="grid grid-cols-2 gap-3">
                 <button type="button" onClick={() => setForm({ ...form, exchangeType: 'mienphi' })}
-                  className={`p-4 rounded-xl flex flex-col items-center gap-2 border-2 transition-all text-sm font-bold ${form.exchangeType === 'mienphi' ? 'border-green-500 bg-green-50 text-green-700' : 'border-transparent bg-[hsl(var(--secondary))]'}`}>
+                  className={`p-4 rounded-xl flex flex-col items-center gap-2 border-2 transition-all text-sm font-bold ${form.exchangeType === 'mienphi' ? 'border-green-500 bg-green-50 text-green-700' : 'border-transparent bg-[var(--secondary)]'}`}>
                   <Gift size={24} /> Tặng Miễn Phí
                 </button>
                 <button type="button" onClick={() => setForm({ ...form, exchangeType: 'traodoi' })}
-                  className={`p-4 rounded-xl flex flex-col items-center gap-2 border-2 transition-all text-sm font-bold ${form.exchangeType === 'traodoi' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-transparent bg-[hsl(var(--secondary))]'}`}>
+                  className={`p-4 rounded-xl flex flex-col items-center gap-2 border-2 transition-all text-sm font-bold ${form.exchangeType === 'traodoi' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-transparent bg-[var(--secondary)]'}`}>
                   <Upload size={24} /> Trao Đổi Đồ
                 </button>
               </div>
@@ -138,19 +137,19 @@ export default function PostPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Tên món đồ *</label>
-                  <input type="text" required placeholder="VD: Giáo trình Giải tích 1" className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                  <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-1.5">Tên món đồ *</label>
+                  <input type="text" required placeholder="VD: Giáo trình Giải tích 1" className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] text-sm focus:ring-2 focus:ring-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] outline-none transition-all" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Danh mục *</label>
-                  <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.category} onChange={e => setForm({ ...form, category: e.target.value as Category })}>
+                  <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-1.5">Danh mục *</label>
+                  <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] text-sm focus:ring-2 focus:ring-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] outline-none transition-all" value={form.category} onChange={e => setForm({ ...form, category: e.target.value as Category })}>
                     <option value="" disabled>Chọn danh mục</option>
                     {Object.entries(CATEGORY_LABELS).map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Tình trạng *</label>
-                  <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.condition} onChange={e => setForm({ ...form, condition: e.target.value as Condition })}>
+                  <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-1.5">Tình trạng *</label>
+                  <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] text-sm focus:ring-2 focus:ring-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] outline-none transition-all" value={form.condition} onChange={e => setForm({ ...form, condition: e.target.value as Condition })}>
                     <option value="" disabled>Chọn tình trạng</option>
                     {Object.entries(CONDITION_LABELS).map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
                   </select>
@@ -158,12 +157,12 @@ export default function PostPage() {
               </div>
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Mô tả chi tiết *</label>
-                  <textarea required rows={4} placeholder="Mô tả tình trạng, lý do tặng, hoặc đồ muốn trao đổi..." className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all resize-none" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+                  <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-1.5">Mô tả chi tiết *</label>
+                  <textarea required rows={4} placeholder="Mô tả tình trạng, lý do tặng, hoặc đồ muốn trao đổi..." className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] text-sm focus:ring-2 focus:ring-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] outline-none transition-all resize-none" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5">Hình ảnh *</label>
-                  <label className="w-full h-[100px] rounded-xl border-2 border-dashed border-[hsl(var(--border))] bg-[hsl(var(--secondary))] flex flex-col items-center justify-center text-[hsl(var(--muted-foreground))] cursor-pointer hover:border-[hsl(var(--primary)/0.3)] transition-colors overflow-hidden relative">
+                  <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-1.5">Hình ảnh *</label>
+                  <label className="w-full h-[100px] rounded-xl border-2 border-dashed border-[var(--border)] bg-[var(--secondary)] flex flex-col items-center justify-center text-[var(--muted-foreground)] cursor-pointer hover:border-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] transition-colors overflow-hidden relative">
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
                     {uploading ? (
                       <Loader size={24} className="animate-spin mb-1.5 opacity-50" />
@@ -180,13 +179,13 @@ export default function PostPage() {
               </div>
             </div>
 
-            <div className="border-t border-[hsl(var(--border))] pt-6 mb-6">
-              <label className="block text-xs font-semibold text-[hsl(var(--muted-foreground))] uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MapPin size={14} className="text-[hsl(var(--primary))]" /> Địa điểm hẹn lấy đồ *</label>
-              <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })}>
+            <div className="border-t border-[var(--border)] pt-6 mb-6">
+              <label className="block text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MapPin size={14} className="text-[var(--primary)]" /> Địa điểm hẹn lấy đồ *</label>
+              <select required className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] text-sm focus:ring-2 focus:ring-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] outline-none transition-all" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })}>
                 <option value="" disabled>Chọn một điểm hẹn công cộng</option>
                 {LOCATIONS.map(loc => (<option key={loc} value={loc}>{loc}</option>))}
               </select>
-              <p className="text-xs text-[hsl(var(--muted-foreground))] mt-1.5">Vui lòng chọn các địa điểm công cộng trong Làng Đại học.</p>
+              <p className="text-xs text-[var(--muted-foreground)] mt-1.5">Vui lòng chọn các địa điểm công cộng trong Làng Đại học.</p>
             </div>
 
             <button type="submit" disabled={!isFormValid}

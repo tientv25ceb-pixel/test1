@@ -20,18 +20,18 @@ export default function RequestsPage() {
   const [tab, setTab] = useState<'sent' | 'received'>('received');
 
   useEffect(() => {
-    fetchRequests()
-  }, [fetchRequests])
+    if (currentUser) fetchRequests()
+  }, [currentUser, fetchRequests])
 
   if (!currentUser) {
     return (
       <main className="min-h-screen flex flex-col">
         <Header />
         <div className="flex-grow flex items-center justify-center p-4">
-          <div className="text-center card rounded-2xl p-10 max-w-sm">
+          <div className="auth-gate">
             <div className="text-5xl mb-4">🔒</div>
             <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-6">Bạn cần đăng nhập để quản lý yêu cầu.</p>
+            <p className="text-sm text-[var(--muted-foreground)] mb-6">Bạn cần đăng nhập để quản lý yêu cầu.</p>
             <Link href="/" className="btn-primary">Về trang chủ</Link>
           </div>
         </div>
@@ -58,31 +58,31 @@ export default function RequestsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
             <div>
               <h1 className="text-3xl font-bold mb-2">Quản lý yêu cầu</h1>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Theo dõi và duyệt các yêu cầu nhận đồ</p>
+              <p className="text-sm text-[var(--muted-foreground)]">Theo dõi và duyệt các yêu cầu nhận đồ</p>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mb-8 bg-[hsl(var(--secondary))] p-1 rounded-xl w-fit">
+          <div className="flex gap-1 mb-8 bg-[var(--secondary)] p-1 rounded-xl w-fit">
             <button
               onClick={() => setTab('received')}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === 'received' ? 'bg-white shadow-sm' : 'hover:text-[hsl(var(--foreground))] text-[hsl(var(--muted-foreground))]'}`}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === 'received' ? 'bg-[var(--card)] shadow-sm' : 'hover:text-[var(--foreground)] text-[var(--muted-foreground)]'}`}
             >
               Yêu cầu đến ({receivedRequests.length})
             </button>
             <button
               onClick={() => setTab('sent')}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === 'sent' ? 'bg-white shadow-sm' : 'hover:text-[hsl(var(--foreground))] text-[hsl(var(--muted-foreground))]'}`}
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${tab === 'sent' ? 'bg-[var(--card)] shadow-sm' : 'hover:text-[var(--foreground)] text-[var(--muted-foreground)]'}`}
             >
               Yêu cầu đã gửi ({sentRequests.length})
             </button>
           </div>
 
           {displayedRequests.length === 0 ? (
-            <div className="card rounded-2xl p-12 text-center">
+            <div className="empty-state">
               <div className="text-5xl mb-4">📋</div>
               <h3 className="text-xl font-bold mb-2">Chưa có yêu cầu nào</h3>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              <p className="text-sm text-[var(--muted-foreground)]">
                 {tab === 'received' ? 'Khi có người yêu cầu nhận đồ của bạn, họ sẽ hiển thị ở đây.' : 'Bạn chưa gửi yêu cầu nhận món đồ nào.'}
               </p>
               <Link href="/items" className="btn-primary mt-6 inline-flex">Khám phá món đồ</Link>
@@ -110,17 +110,17 @@ export default function RequestsPage() {
                             {req.status === 'rejected' && <X size={12} className="inline mr-1" />}
                             {STATUS_BADGE[req.status].label}
                           </div>
-                          <span className="text-xs text-[hsl(var(--muted-foreground))]">{new Date(req.createdAt).toLocaleDateString('vi-VN')}</span>
+                          <span className="text-xs text-[var(--muted-foreground)]">{new Date(req.createdAt).toLocaleDateString('vi-VN')}</span>
                         </div>
 
-                        <Link href={`/detail/${req.itemId}`} className="text-lg font-bold hover:text-[hsl(var(--primary))] transition-colors mb-1 block">
+                        <Link href={`/detail/${req.itemId}`} className="text-lg font-bold hover:text-[var(--primary)] transition-colors mb-1 block">
                           {req.itemTitle}
                         </Link>
 
-                        <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                        <p className="text-sm text-[var(--muted-foreground)]">
                           {tab === 'received'
-                            ? <><span className="font-medium text-[hsl(var(--foreground))]">{req.requesterName}</span> muốn nhận món đồ này</>
-                            : <span>Gửi đến <span className="font-medium text-[hsl(var(--foreground))]">{req.posterName}</span></span>
+                            ? <><span className="font-medium text-[var(--foreground)]">{req.requesterName}</span> muốn nhận món đồ này</>
+                            : <span>Gửi đến <span className="font-medium text-[var(--foreground)]">{req.posterName}</span></span>
                           }
                         </p>
                       </div>
@@ -153,14 +153,14 @@ export default function RequestsPage() {
                             </button>
                             <button
                               onClick={() => handleChat(req.requesterId, req.requesterName, req.itemId, req.itemTitle)}
-                              className="px-4 py-2 rounded-xl bg-[hsl(var(--secondary))] text-sm font-medium hover:bg-[hsl(var(--border))] transition-colors"
+                              className="px-4 py-2 rounded-xl bg-[var(--secondary)] text-sm font-medium hover:bg-[var(--border)] transition-colors"
                             >
                               <MessageCircle size={16} />
                             </button>
                           </>
                         )}
                         {tab === 'sent' && req.status === 'pending' && (
-                          <span className="text-xs text-[hsl(var(--muted-foreground))] italic flex items-center">Đang chờ phản hồi</span>
+                          <span className="text-xs text-[var(--muted-foreground)] italic flex items-center">Đang chờ phản hồi</span>
                         )}
                         {tab === 'sent' && req.status === 'accepted' && (
                           <span className="text-xs text-green-600 font-medium flex items-center"><CheckCircle size={16} className="mr-1" /> Đã duyệt</span>
@@ -168,7 +168,7 @@ export default function RequestsPage() {
                         {req.status === 'collected' && (
                           <span className="text-xs text-blue-600 font-medium flex items-center"><Package size={16} className="mr-1" /> Hoàn tất</span>
                         )}
-                        <Link href={`/detail/${req.itemId}`} className="px-4 py-2 rounded-xl bg-[hsl(var(--secondary))] text-sm font-medium hover:bg-[hsl(var(--border))] transition-colors flex items-center">
+                        <Link href={`/detail/${req.itemId}`} className="px-4 py-2 rounded-xl bg-[var(--secondary)] text-sm font-medium hover:bg-[var(--border)] transition-colors flex items-center">
                           <ArrowRight size={16} />
                         </Link>
                       </div>

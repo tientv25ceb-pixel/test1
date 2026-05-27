@@ -49,13 +49,13 @@ export default function Header() {
       }`}>
         <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
           <Link href="/" className="flex items-center group">
-            <div className="h-10 md:h-12 w-auto relative transition-all group-hover:scale-[1.03] duration-300 group-hover:drop-shadow-[0_0_12px_rgba(59,130,246,0.3)]">
-              <Image 
-                src="/logo.png" 
-                alt="ĐN-UniShare Logo" 
-                width={200} 
-                height={48} 
-                className="h-full w-auto object-contain" 
+            <div className="h-10 md:h-12 w-auto relative transition-all duration-300 group-hover:scale-[1.02]">
+              <Image
+                src="/logo.png"
+                alt="ĐN-UniShare Logo"
+                width={200}
+                height={48}
+                className="h-full w-auto object-contain rounded-xl"
                 priority
               />
             </div>
@@ -69,7 +69,7 @@ export default function Header() {
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   pathname === item.href
                     ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-500/25'
-                    : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--secondary))] hover:shadow-sm'
+                    : 'text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--secondary)] hover:shadow-sm'
                 }`}
               >
                 {item.label}
@@ -82,9 +82,10 @@ export default function Header() {
               <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-[hsl(var(--secondary))] transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-[var(--secondary)] transition-colors"
+                  aria-label="Menu người dùng"
                 >
-                  <div className="h-8 w-8 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-white text-sm font-bold">
+                  <div className="h-8 w-8 rounded-full bg-[var(--primary)] flex items-center justify-center text-white text-sm font-bold">
                     {currentUser.name.charAt(0)}
                   </div>
                   <span className="text-sm font-medium max-w-[100px] truncate">{currentUser.name}</span>
@@ -92,23 +93,23 @@ export default function Header() {
 
                 {isProfileOpen && (
                   <div className="absolute right-0 top-full mt-2 w-56 glass-premium rounded-2xl shadow-2xl py-2 animate-in">
-                    <div className="px-4 py-3 border-b border-[hsl(var(--border))]">
+                    <div className="px-4 py-3 border-b border-[var(--border)]">
                       <p className="font-bold text-sm">{currentUser.name}</p>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))] truncate">{currentUser.email}</p>
+                      <p className="text-xs text-[var(--muted-foreground)] truncate">{currentUser.email}</p>
                     </div>
-                    <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[hsl(var(--secondary))] transition-colors">
+                    <Link href="/profile" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--secondary)] transition-colors">
                       <User size={16} /> Trang cá nhân
                     </Link>
-                    <Link href="/requests" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[hsl(var(--secondary))] transition-colors">
+                    <Link href="/requests" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--secondary)] transition-colors">
                       <ClipboardList size={16} /> Yêu cầu
                     </Link>
-                    <Link href="/favorites" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[hsl(var(--secondary))] transition-colors">
+                    <Link href="/favorites" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--secondary)] transition-colors">
                       <Heart size={16} /> Yêu thích
                     </Link>
-                    <Link href="/chat" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[hsl(var(--secondary))] transition-colors">
+                    <Link href="/chat" onClick={() => setIsProfileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-[var(--secondary)] transition-colors">
                       <MessageCircle size={16} /> Tin nhắn
                     </Link>
-                    <div className="border-t border-[hsl(var(--border))] mt-1 pt-1">
+                    <div className="border-t border-[var(--border)] mt-1 pt-1">
                       <button onClick={() => { logout(); setIsProfileOpen(false); }} className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors w-full">
                         <LogOut size={16} /> Đăng xuất
                       </button>
@@ -128,8 +129,9 @@ export default function Header() {
           </div>
 
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-[hsl(var(--secondary))] transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-[var(--secondary)] transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label={isMobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
           >
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -139,13 +141,13 @@ export default function Header() {
           <div className="md:hidden glass-premium border-t border-white/30 shadow-2xl animate-in">
             <nav className="flex flex-col p-4 gap-1">
               {currentUser && (
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-[hsl(var(--border))] mb-2">
-                  <div className="h-10 w-10 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-white font-bold">
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] mb-2">
+                  <div className="h-10 w-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-white font-bold">
                     {currentUser.name.charAt(0)}
                   </div>
                   <div>
                     <p className="font-bold text-sm">{currentUser.name}</p>
-                    <p className="text-xs text-[hsl(var(--muted-foreground))]">{currentUser.faculty}</p>
+                    <p className="text-xs text-[var(--muted-foreground)]">{currentUser.faculty}</p>
                   </div>
                 </div>
               )}
@@ -156,8 +158,8 @@ export default function Header() {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                     pathname === item.href
-                      ? 'bg-[hsl(var(--primary))] text-white'
-                      : 'hover:bg-[hsl(var(--secondary))]'
+                      ? 'bg-[var(--primary)] text-white'
+                      : 'hover:bg-[var(--secondary)]'
                   }`}
                 >
                   {item.label}
@@ -165,16 +167,16 @@ export default function Header() {
               ))}
               {currentUser && (
                 <>
-                  <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[hsl(var(--secondary))] flex items-center gap-2">
+                  <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[var(--secondary)] flex items-center gap-2">
                     <User size={16} /> Trang cá nhân
                   </Link>
-                  <Link href="/requests" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[hsl(var(--secondary))] flex items-center gap-2">
+                  <Link href="/requests" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[var(--secondary)] flex items-center gap-2">
                     <ClipboardList size={16} /> Yêu cầu
                   </Link>
-                  <Link href="/favorites" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[hsl(var(--secondary))] flex items-center gap-2">
+                  <Link href="/favorites" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[var(--secondary)] flex items-center gap-2">
                     <Heart size={16} /> Yêu thích
                   </Link>
-                  <Link href="/chat" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[hsl(var(--secondary))] flex items-center gap-2">
+                  <Link href="/chat" onClick={() => setIsMobileMenuOpen(false)} className="px-4 py-3 rounded-xl text-sm font-medium hover:bg-[var(--secondary)] flex items-center gap-2">
                     <MessageCircle size={16} /> Tin nhắn
                   </Link>
                 </>

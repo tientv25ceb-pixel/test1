@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import MountainRange from '@/components/decorative/mountain-range';
 import { useStore } from '@/lib/store';
 import { Gift, Heart, ClipboardList, Mail, Building2, Calendar, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -15,18 +14,18 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchItems()
-    fetchRequests()
-  }, [fetchItems, fetchRequests])
+    if (currentUser) fetchRequests()
+  }, [currentUser, fetchItems, fetchRequests])
 
   if (!currentUser) {
     return (
       <main className="min-h-screen flex flex-col">
         <Header />
         <div className="flex-grow flex items-center justify-center p-4">
-          <div className="text-center card rounded-2xl p-10 max-w-sm">
+          <div className="auth-gate">
             <div className="text-5xl mb-4">🔒</div>
             <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-6">Bạn cần đăng nhập để xem trang cá nhân.</p>
+            <p className="text-sm text-[var(--muted-foreground)] mb-6">Bạn cần đăng nhập để xem trang cá nhân.</p>
             <Link href="/" className="btn-primary">Về trang chủ</Link>
           </div>
         </div>
@@ -44,18 +43,16 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen flex flex-col relative overflow-hidden">
       <Header />
-      <MountainRange className="absolute bottom-0 left-0 w-full h-[80px] opacity-40" />
       <div className="flex-grow pt-28 pb-16 relative z-10">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">
-          {/* Profile Header */}
           <div className="card rounded-2xl p-8 mb-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              <div className="h-24 w-24 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-white text-3xl font-bold shrink-0 shadow-lg">
+              <div className="h-24 w-24 rounded-full bg-[var(--primary)] flex items-center justify-center text-white text-3xl font-bold shrink-0 shadow-lg">
                 {currentUser.name.charAt(0)}
               </div>
               <div className="text-center md:text-left flex-grow">
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">{currentUser.name}</h1>
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-[hsl(var(--muted-foreground))]">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-sm text-[var(--muted-foreground)]">
                   <span className="flex items-center gap-1.5"><Mail size={14} /> {currentUser.email}</span>
                   <span className="flex items-center gap-1.5"><Building2 size={14} /> {currentUser.faculty}</span>
                   <span className="flex items-center gap-1.5"><Calendar size={14} /> Tham gia từ 2025</span>
@@ -67,67 +64,64 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="card rounded-2xl p-5 text-center hover:translate-y-0">
-              <div className="text-3xl font-bold text-[hsl(var(--primary))] mb-1">{myItems.length}</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Món đã đăng</div>
+              <div className="text-3xl font-bold text-[var(--primary)] mb-1">{myItems.length}</div>
+              <div className="text-xs text-[var(--muted-foreground)]">Món đã đăng</div>
             </div>
             <div className="card rounded-2xl p-5 text-center hover:translate-y-0">
               <div className="text-3xl font-bold text-green-600 mb-1">{acceptedRequests.length}</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Đã trao đổi</div>
+              <div className="text-xs text-[var(--muted-foreground)]">Đã trao đổi</div>
             </div>
             <div className="card rounded-2xl p-5 text-center hover:translate-y-0">
               <div className="text-3xl font-bold text-amber-600 mb-1">{myFavorites.length}</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Yêu thích</div>
+              <div className="text-xs text-[var(--muted-foreground)]">Yêu thích</div>
             </div>
             <div className="card rounded-2xl p-5 text-center hover:translate-y-0">
               <div className="text-3xl font-bold text-rose-600 mb-1">{sentRequests.length}</div>
-              <div className="text-xs text-[hsl(var(--muted-foreground))]">Yêu cầu đã gửi</div>
+              <div className="text-xs text-[var(--muted-foreground)]">Yêu cầu đã gửi</div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* My Items */}
             <div className="card rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold flex items-center gap-2"><Gift size={18} className="text-[hsl(var(--primary))]" /> Món đồ đã đăng</h2>
-                {myItems.length > 3 && <Link href="/items" className="text-xs text-[hsl(var(--primary))] font-medium">Xem tất cả →</Link>}
+                <h2 className="font-bold flex items-center gap-2"><Gift size={18} className="text-[var(--primary)]" /> Món đồ đã đăng</h2>
+                {myItems.length > 3 && <Link href="/items" className="text-xs text-[var(--primary)] font-medium">Xem tất cả →</Link>}
               </div>
               {myItems.length > 0 ? (
                 <div className="space-y-3">
                   {myItems.slice(0, 4).map(item => (
-                    <Link key={item.id} href={`/detail/${item.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-[hsl(var(--secondary))] transition-colors">
-                      <div className="h-12 w-12 rounded-lg bg-[hsl(var(--secondary))] overflow-hidden shrink-0">
+                    <Link key={item.id} href={`/detail/${item.id}`} className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--secondary)] transition-colors">
+                      <div className="h-12 w-12 rounded-lg bg-[var(--secondary)] overflow-hidden shrink-0">
                         <img src={item.image} alt="" className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-grow min-w-0">
                         <p className="text-sm font-medium truncate">{item.title}</p>
-                        <p className="text-xs text-[hsl(var(--muted-foreground))]">{item.requestedCount} lượt yêu cầu</p>
+                        <p className="text-xs text-[var(--muted-foreground)]">{item.requestedCount} lượt yêu cầu</p>
                       </div>
-                      <ArrowRight size={16} className="text-[hsl(var(--muted-foreground))] shrink-0" />
+                      <ArrowRight size={16} className="text-[var(--muted-foreground)] shrink-0" />
                     </Link>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-6">
                   <div className="text-3xl mb-2">📦</div>
-                  <p className="text-sm text-[hsl(var(--muted-foreground))] mb-3">Bạn chưa đăng món đồ nào</p>
+                  <p className="text-sm text-[var(--muted-foreground)] mb-3">Bạn chưa đăng món đồ nào</p>
                   <Link href="/post" className="btn-primary text-xs">Đăng ngay</Link>
                 </div>
               )}
             </div>
 
-            {/* Recent Activity */}
             <div className="card rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold flex items-center gap-2"><ClipboardList size={18} className="text-[hsl(var(--primary))]" /> Yêu cầu gần đây</h2>
-                <Link href="/requests" className="text-xs text-[hsl(var(--primary))] font-medium">Xem tất cả →</Link>
+                <h2 className="font-bold flex items-center gap-2"><ClipboardList size={18} className="text-[var(--primary)]" /> Yêu cầu gần đây</h2>
+                <Link href="/requests" className="text-xs text-[var(--primary)] font-medium">Xem tất cả →</Link>
               </div>
               {sentRequests.length > 0 ? (
                 <div className="space-y-3">
                   {sentRequests.slice(0, 4).map(req => (
-                    <div key={req.id} className="flex items-center gap-3 p-3 rounded-xl bg-[hsl(var(--secondary))]">
+                    <div key={req.id} className="flex items-center gap-3 p-3 rounded-xl bg-[var(--secondary)]">
                       <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
                         req.status === 'accepted' ? 'bg-green-100 text-green-700' :
                         req.status === 'rejected' ? 'bg-red-100 text-red-700' :
@@ -138,7 +132,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex-grow min-w-0">
                         <p className="text-sm font-medium truncate">{req.itemTitle}</p>
-                        <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        <p className="text-xs text-[var(--muted-foreground)]">
                           {req.status === 'pending' ? 'Đang chờ duyệt' :
                            req.status === 'accepted' ? 'Đã được duyệt' :
                            req.status === 'rejected' ? 'Đã từ chối' : 'Đã nhận'}
@@ -150,7 +144,7 @@ export default function ProfilePage() {
               ) : (
                 <div className="text-center py-6">
                   <div className="text-3xl mb-2">📋</div>
-                  <p className="text-sm text-[hsl(var(--muted-foreground))]">Chưa có yêu cầu nào</p>
+                  <p className="text-sm text-[var(--muted-foreground)]">Chưa có yêu cầu nào</p>
                 </div>
               )}
             </div>

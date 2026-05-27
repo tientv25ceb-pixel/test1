@@ -1,14 +1,28 @@
-import { NextResponse } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 import { auth } from "./auth"
 import { supabase } from "./supabase"
 
-export async function getAuthUser() {
-  const session = await auth()
-  if (!session?.user?.id) return null
+export async function getAuthUser(req?: NextRequest) {
+  let userId: string | undefined
+
+  if (req) {
+    const reqWithAuth = req as NextRequest & { auth?: unknown }
+    let session = reqWithAuth.auth
+    if (!session) {
+      session = await auth()
+    }
+    userId = (session as any)?.user?.id
+  } else {
+    const session = await auth()
+    userId = session?.user?.id
+  }
+
+  if (!userId) return null
+
   const { data } = await supabase
     .from("users")
     .select("*")
-    .eq("id", session.user.id)
+    .eq("id", userId)
     .single()
   return data
 }

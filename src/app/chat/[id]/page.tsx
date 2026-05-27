@@ -28,7 +28,7 @@ export default function ChatRoom({ params }: { params: Promise<{ id: string }> }
       <main className="min-h-screen flex flex-col">
         <Header />
         <div className="flex-grow flex items-center justify-center p-4">
-          <div className="text-center card rounded-2xl p-10 max-w-sm">
+          <div className="auth-gate">
             <div className="text-5xl mb-4">🔒</div>
             <h2 className="text-xl font-bold mb-2">Vui lòng đăng nhập</h2>
             <Link href="/" className="btn-primary mt-6 inline-flex">Về trang chủ</Link>
@@ -83,16 +83,16 @@ export default function ChatRoom({ params }: { params: Promise<{ id: string }> }
         <div className="container mx-auto px-4 md:px-6 max-w-3xl">
           {/* Chat header */}
           <div className="flex items-center gap-3 mb-6">
-            <button onClick={() => router.push('/chat')} className="p-2 rounded-xl hover:bg-[hsl(var(--secondary))] transition-colors">
+            <button onClick={() => router.push('/chat')} className="p-2 rounded-xl hover:bg-[var(--secondary)] transition-colors">
               <ArrowLeft size={20} />
             </button>
-            <div className="h-10 w-10 rounded-full bg-[hsl(var(--primary)/0.1)] flex items-center justify-center font-bold text-[hsl(var(--primary))]">
+            <div className="h-10 w-10 rounded-full bg-[color-mix(in_oklch,_var(--primary)_10%,_transparent)] flex items-center justify-center font-bold text-[var(--primary)]">
               {otherName.charAt(0)}
             </div>
             <div>
               <p className="font-bold">{otherName}</p>
-              <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                Về: <Link href={`/detail/${conversation.itemId}`} className="text-[hsl(var(--primary))] hover:underline">{conversation.itemTitle}</Link>
+              <p className="text-xs text-[var(--muted-foreground)]">
+                Về: <Link href={`/detail/${conversation.itemId}`} className="text-[var(--primary)] hover:underline">{conversation.itemTitle}</Link>
               </p>
             </div>
           </div>
@@ -103,8 +103,8 @@ export default function ChatRoom({ params }: { params: Promise<{ id: string }> }
               <div className="flex-grow flex items-center justify-center text-center">
                 <div>
                   <div className="text-4xl mb-3">💬</div>
-                  <p className="text-sm text-[hsl(var(--muted-foreground))]">Bắt đầu cuộc trò chuyện với {otherName}</p>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Hãy gửi lời chào và thống nhất thời gian, địa điểm nhé!</p>
+                  <p className="text-sm text-[var(--muted-foreground)]">Bắt đầu cuộc trò chuyện với {otherName}</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">Hãy gửi lời chào và thống nhất thời gian, địa điểm nhé!</p>
                 </div>
               </div>
             )}
@@ -112,11 +112,11 @@ export default function ChatRoom({ params }: { params: Promise<{ id: string }> }
               <div key={msg.id} className={`flex ${isMyMessage(msg.senderId) ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                   isMyMessage(msg.senderId)
-                    ? 'bg-[hsl(var(--primary))] text-white rounded-br-lg'
-                    : 'bg-[hsl(var(--secondary))] text-[hsl(var(--foreground))] rounded-bl-lg'
+                    ? 'bg-[var(--primary)] text-white rounded-br-lg'
+                    : 'bg-[var(--secondary)] text-[var(--foreground)] rounded-bl-lg'
                 }`}>
                   {msg.text}
-                  <div className={`text-[10px] mt-1 ${isMyMessage(msg.senderId) ? 'text-white/60 text-right' : 'text-[hsl(var(--muted-foreground))]'}`}>
+                  <div className={`text-[10px] mt-1 ${isMyMessage(msg.senderId) ? 'text-white/60 text-right' : 'text-[var(--muted-foreground)]'}`}>
                     {formatTime(msg.createdAt)}
                   </div>
                 </div>
@@ -132,12 +132,12 @@ export default function ChatRoom({ params }: { params: Promise<{ id: string }> }
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Nhập tin nhắn..."
-              className="flex-grow px-5 py-3 rounded-full border border-[hsl(var(--border))] bg-white text-sm focus:ring-2 focus:ring-[hsl(var(--primary)/0.3)] outline-none transition-all"
+              className="flex-grow px-5 py-3 rounded-full border border-[var(--border)] bg-white text-sm focus:ring-2 focus:ring-[color-mix(in_oklch,_var(--primary)_30%,_transparent)] outline-none transition-all"
             />
             <button
               type="submit"
               disabled={!input.trim()}
-              className="h-12 w-12 rounded-full bg-[hsl(var(--primary))] text-white flex items-center justify-center hover:brightness-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              className="h-12 w-12 rounded-full bg-[var(--primary)] text-white flex items-center justify-center hover:brightness-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
             >
               <Send size={18} />
             </button>

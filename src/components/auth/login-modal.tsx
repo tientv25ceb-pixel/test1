@@ -25,22 +25,22 @@ export default function LoginModal({ isOpen, onClose }: { isOpen: boolean; onClo
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative"
             onClick={e => e.stopPropagation()}
           >
-            <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-xl hover:bg-[hsl(var(--secondary))] transition-colors">
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-xl hover:bg-[var(--secondary)] transition-colors">
               <X size={20} />
             </button>
 
             <div className="text-center">
               <div className="h-16 w-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                <GraduationCap size={32} className="text-[hsl(var(--primary))]" />
+                <GraduationCap size={32} className="text-[var(--primary)]" />
               </div>
               <h2 className="text-2xl font-bold mb-2">Chào bạn!</h2>
-              <p className="text-sm text-[hsl(var(--muted-foreground))] mb-2">Đăng nhập để tham gia cộng đồng ĐN-UniShare</p>
-              <p className="text-xs text-[hsl(var(--muted-foreground))] mb-8">
+              <p className="text-sm text-[var(--muted-foreground)] mb-2">Đăng nhập để tham gia cộng đồng ĐN-UniShare</p>
+              <p className="text-xs text-[var(--muted-foreground)] mb-8">
                 Chỉ chấp nhận email trường: <strong>@sv1.dut.udn.vn</strong>, <strong>@due.edu.vn</strong>, ...
               </p>
               <button
                 onClick={() => login('google')}
-                className="w-full flex items-center justify-center gap-3 px-6 py-3 border-2 border-[hsl(var(--border))] rounded-xl hover:bg-[hsl(var(--secondary))] transition-all font-medium"
+                className="w-full flex items-center justify-center gap-3 px-6 py-3 border-2 border-[var(--border)] rounded-xl hover:bg-[var(--secondary)] transition-all font-medium"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>

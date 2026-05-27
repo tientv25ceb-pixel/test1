@@ -62,11 +62,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session }) {
       if (session.user?.email) {
-        const dbUser = await supabase
+        let dbUser = await supabase
           .from("users")
           .select("*")
           .eq("email", session.user.email)
           .single()
+        
+        if (!dbUser.data) {
+          // Tự động đồng bộ lại nếu user chưa tồn tại trong DB (do lỗi RLS trước đó hoặc reset DB)
+          const id = await syncUser(session.user.email, session.user.name ?? "User", session.user.image ?? undefined)
+          if (id) {
+            dbUser = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", id)
+              .single()
+          }
+        }
+
         if (dbUser.data) {
           session.user.id = dbUser.data.id
           session.user.faculty = dbUser.data.faculty

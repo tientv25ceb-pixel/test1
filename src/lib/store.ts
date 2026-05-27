@@ -74,8 +74,7 @@ export const useStore = create<ShareStore>()((set, get) => ({
     try {
       const requests = await api.getRequests(type)
       set({ requests })
-    } catch (e) {
-      console.error('fetchRequests error:', e)
+    } catch {
     } finally {
       set({ requestsLoading: false })
     }
@@ -96,8 +95,7 @@ export const useStore = create<ShareStore>()((set, get) => ({
     try {
       const favs = await api.getFavorites()
       set({ favorites: favs })
-    } catch (e) {
-      console.error('fetchFavorites error:', e)
+    } catch {
     }
   },
   toggleFavorite: async (itemId) => {

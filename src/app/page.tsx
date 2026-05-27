@@ -4,118 +4,40 @@ import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import HeroSection from '@/components/home/hero-section';
 import WaveDivider from '@/components/decorative/wave-divider';
-import WaveBackground from '@/components/decorative/wave-background';
-import DragonBridge from '@/components/decorative/dragon-bridge';
-import FloatingShapes from '@/components/decorative/floating-shapes';
-import TiltCard from '@/components/ui/tilt-card';
+import ItemCard from '@/components/ui/item-card';
 import { useStore } from '@/lib/store';
-import { CATEGORY_MAP, CONDITION_LABELS, Item } from '@/lib/data';
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, ArrowRight, Gift, Search, MessageCircle, Heart } from 'lucide-react';
+import { ArrowRight, Gift, Search, MessageCircle, Heart } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
-function ItemCard({ item, idx }: { item: Item; idx: number }) {
-  const cat = CATEGORY_MAP[item.category];
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40, rotateX: -10 }}
-      animate={{ opacity: 1, y: 0, rotateX: 0 }}
-      transition={{ delay: idx * 0.1, duration: 0.5, type: 'spring', stiffness: 100 }}
-    >
-      <TiltCard className="rounded-2xl overflow-hidden" glowColor={item.exchangeType === 'mienphi' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(59, 130, 246, 0.15)'}>
-        <Link href={`/detail/${item.id}`} className="rounded-2xl overflow-hidden flex flex-col group bg-white">
-          {/* Image */}
-          <div className="relative aspect-[16/10] overflow-hidden">
-            <Image
-              src={item.image}
-              alt={item.title}
-              fill
-              className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-            />
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            {/* Badges on image */}
-            <div className="absolute top-3 left-3 flex gap-2">
-              <span className={`badge text-white shadow-lg backdrop-blur-sm ${item.exchangeType === 'mienphi' ? 'bg-green-500/90' : 'bg-blue-500/90'}`}>
-                {item.exchangeType === 'mienphi' ? '🍀 Miễn phí' : '🔄 Trao đổi'}
-              </span>
-            </div>
-            {item.isFeatured && (
-              <div className="absolute top-3 right-3">
-                <span className="badge bg-amber-400/90 text-amber-900 shadow-lg backdrop-blur-sm pulse-glow">⭐ Nổi bật</span>
-              </div>
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="p-5 flex flex-col flex-grow">
-            {/* Tags */}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="badge badge-blue">
-                {cat.emoji} {cat.label}
-              </span>
-              <span className="badge badge-green">
-                ✨ {CONDITION_LABELS[item.condition]}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h3 className="font-bold text-base mb-2 line-clamp-1 group-hover:text-[hsl(var(--primary))] transition-colors">
-              {item.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4 line-clamp-2 flex-grow leading-relaxed">
-              {item.description}
-            </p>
-
-            {/* Meta info */}
-            <div className="flex items-center gap-4 text-xs text-[hsl(var(--muted-foreground))] mb-4">
-              <span className="flex items-center gap-1">
-                <MapPin size={12} /> {item.location}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock size={12} /> {item.createdAt}
-              </span>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-[hsl(var(--border))] pt-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                  {item.postedBy.charAt(0)}
-                </div>
-                <span className="text-sm font-medium truncate max-w-[120px]">{item.postedBy}</span>
-              </div>
-              <span className="text-xs font-semibold text-[hsl(var(--primary))]">
-                {item.requestedCount} người quan tâm
-              </span>
-            </div>
-          </div>
-        </Link>
-      </TiltCard>
-    </motion.div>
-  );
-}
+const GlobeSection = dynamic(() => import('@/components/home/globe-section'), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#050a15] text-white z-[9999]">
+      <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+      <span className="text-xs text-blue-300/60 font-medium mt-3">Đang tải bản đồ 3D...</span>
+    </div>
+  ),
+});
 
 export default function Home() {
   const items = useStore(state => state.items);
   const featuredItems = items.filter(i => i.isFeatured).slice(0, 4);
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <main className="min-h-screen flex flex-col relative dark-theme-override">
+      <GlobeSection />
       <Header />
 
       <div className="flex-grow">
         <HeroSection />
 
         {/* Wave divider */}
-        <WaveDivider className="-mb-1" />
+        <WaveDivider className="-mb-1 opacity-20" />
 
         {/* Featured Items Section */}
-        <section className="py-16 hero-bg relative overflow-hidden">
-          <DragonBridge className="absolute bottom-0 right-0 w-[250px] h-[100px] opacity-60 hidden md:block" />
+        <section className="py-16 bg-transparent relative overflow-hidden">
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -127,7 +49,7 @@ export default function Home() {
                 >
                   🔥 Món đồ nổi bật
                 </motion.h2>
-                <p className="text-[hsl(var(--muted-foreground))] mt-2 text-sm">
+                <p className="text-[var(--muted-foreground)] mt-2 text-sm">
                   Những món đồ được quan tâm nhiều nhất trên ĐN-UniShare
                 </p>
               </div>
@@ -141,6 +63,11 @@ export default function Home() {
                 <ItemCard key={item.id} item={item} idx={idx} />
               ))}
             </div>
+            {featuredItems.length === 0 && (
+              <div className="text-center py-12 card rounded-2xl">
+                <p className="text-[var(--muted-foreground)] text-sm">Chưa có món đồ nổi bật nào. Hãy là người đầu tiên đăng!</p>
+              </div>
+            )}
 
             <div className="mt-8 text-center md:hidden">
               <Link href="/items" className="btn-outline">
@@ -150,8 +77,11 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Section divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent opacity-30" />
+
         {/* How it works */}
-        <section className="py-16 bg-white relative overflow-hidden">
+        <section className="py-16 bg-[rgba(0,0,0,0.15)] relative overflow-hidden">
           <div className="container mx-auto px-4 md:px-6">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <motion.h2
@@ -162,7 +92,7 @@ export default function Home() {
               >
                 Cách ĐN-UniShare hoạt động
               </motion.h2>
-              <p className="text-[hsl(var(--muted-foreground))] text-sm">Quy trình đơn giản để sẻ chia và nhận lại niềm vui</p>
+              <p className="text-[var(--muted-foreground)] text-sm">Quy trình đơn giản để sẻ chia và nhận lại niềm vui</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -185,21 +115,22 @@ export default function Home() {
                   <div className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-sm font-bold shadow-md z-10">
                     {idx + 1}
                   </div>
-                  <div className="h-14 w-14 rounded-xl bg-[hsl(var(--secondary))] flex items-center justify-center mx-auto mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
+                  <div className="h-14 w-14 rounded-xl bg-[var(--secondary)] flex items-center justify-center mx-auto mb-4 relative z-10 group-hover:scale-110 transition-transform duration-300">
                     {step.icon}
                   </div>
                   <h3 className="font-bold mb-2 relative z-10">{step.title}</h3>
-                  <p className="text-sm text-[hsl(var(--muted-foreground))] leading-relaxed relative z-10">{step.desc}</p>
+                  <p className="text-sm text-[var(--muted-foreground)] leading-relaxed relative z-10">{step.desc}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Section divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent opacity-30" />
+
         {/* CTA — Animated Gradient */}
         <section className="py-16 relative overflow-hidden">
-          <WaveBackground className="absolute -top-10 left-0 opacity-30" opacity={0.06} />
-          <FloatingShapes className="opacity-40" />
           <div className="container mx-auto px-4 md:px-6 relative z-10">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -222,7 +153,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center relative z-10">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link href="/post" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white text-[hsl(var(--primary))] font-bold hover:shadow-lg hover:shadow-white/20 transition-all">
+                  <Link href="/post" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white text-[var(--primary)] font-bold hover:shadow-lg hover:shadow-white/20 transition-all">
                     Bắt đầu chia sẻ ngay
                   </Link>
                 </motion.div>

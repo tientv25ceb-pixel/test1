@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthUser()
+  const user = await getAuthUser(request)
   if (!user) return unauthorized()
 
   const body = await request.json()

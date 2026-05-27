@@ -103,12 +103,14 @@ export async function sendMessage(conversationId: string, text: string) {
   })
 }
 
-// Upload
 export async function uploadImage(file: File) {
   const formData = new FormData()
   formData.append("file", file)
   const res = await fetch(`${BASE}/upload`, { method: "POST", body: formData })
-  if (!res.ok) throw new Error("Upload failed")
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Upload failed" }))
+    throw new Error(err.error ?? "Upload failed")
+  }
   const data = await res.json()
   return camelizeKeys<{ url: string }>(data)
 }

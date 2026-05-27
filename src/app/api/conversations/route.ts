@@ -2,8 +2,8 @@ import { NextRequest } from "next/server"
 import { supabase } from "@/lib/supabase"
 import { getAuthUser, unauthorized, badRequest, ok, created } from "@/lib/api-helpers"
 
-export async function GET() {
-  const user = await getAuthUser()
+export async function GET(request: NextRequest) {
+  const user = await getAuthUser(request)
   if (!user) return unauthorized()
 
   const { data, error } = await supabase
@@ -17,7 +17,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await getAuthUser()
+  const user = await getAuthUser(request)
   if (!user) return unauthorized()
 
   const body = await request.json()

@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
-import DecorativeGrid from "@/components/decorative/decorative-grid";
+import { Outfit, Be_Vietnam_Pro } from "next/font/google";
 import SessionProvider from "@/components/auth/session-provider";
 import SessionSync from "@/components/auth/session-sync";
 import "./globals.css";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ["vietnamese", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
   title: "ĐN-UniShare | Kết nối Sẻ chia Sinh viên Đà Nẵng",
@@ -18,9 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <body className={`${outfit.className} antialiased relative`}>
-        <DecorativeGrid />
+    <html lang="vi" suppressHydrationWarning
+      style={{ overflowX: 'clip' }}
+    >
+      <body className={`${outfit.variable} ${beVietnamPro.variable} antialiased relative`}
+        style={{ fontFamily: 'var(--font-body)', overflowX: 'clip' }}
+      >
         <div className="relative z-10">
           <SessionProvider>
             <SessionSync />

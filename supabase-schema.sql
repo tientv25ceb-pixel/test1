@@ -3,6 +3,9 @@
 -- Chạy script này trong Supabase SQL Editor
 -- ============================================================
 
+-- Kích hoạt extension uuid-ossp để tự động tạo ID ngẫu nhiên (UUID)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- 1. Users (mở rộng từ Auth.users)
 CREATE TABLE public.users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -111,14 +114,14 @@ CREATE TABLE public.ratings (
 
 CREATE INDEX idx_ratings_target ON public.ratings(target_id);
 
--- 8. Enable Row Level Security
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.requests ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.ratings ENABLE ROW LEVEL SECURITY;
+-- 8. Disable Row Level Security (tắt RLS để Server API routes có thể đọc ghi dữ liệu tự do qua Anon Key)
+ALTER TABLE public.users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.items DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.requests DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.favorites DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversations DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ratings DISABLE ROW LEVEL SECURITY;
 
 -- 9. RLS Policies
 -- Users: ai cũng đọc được, chỉ tự sửa được profile mình
@@ -166,3 +169,20 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.conversations;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.items;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.requests;
+
+-- 11. Storage Bucket & Policies for product images ('items' bucket)
+-- Tạo bucket 'items' nếu chưa tồn tại
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('items', 'items', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Cho phép upload ảnh vào bucket 'items' (role anon/authenticated)
+CREATE POLICY "Allow public upload to items" ON storage.objects
+FOR INSERT TO public
+WITH CHECK (bucket_id = 'items');
+
+-- Cho phép đọc ảnh từ bucket 'items'
+CREATE POLICY "Allow public read from items" ON storage.objects
+FOR SELECT TO public
+USING (bucket_id = 'items');
+

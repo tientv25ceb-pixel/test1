@@ -55,14 +55,14 @@ export default function QRModal({
             className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full relative text-center"
             onClick={e => e.stopPropagation()}
           >
-            <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-xl hover:bg-[hsl(var(--secondary))] transition-colors">
+            <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-xl hover:bg-[var(--secondary)] transition-colors">
               <X size={20} />
             </button>
 
             <h3 className="font-bold text-lg mb-1">Mã QR nhận đồ</h3>
-            <p className="text-xs text-[hsl(var(--muted-foreground))] mb-6">Đưa mã này cho người đăng để nhận đồ</p>
+            <p className="text-xs text-[var(--muted-foreground)] mb-6">Đưa mã này cho người đăng để nhận đồ</p>
 
-            <div className="bg-white rounded-xl p-4 inline-block shadow-md border border-[hsl(var(--border))] mb-5">
+            <div className="bg-white rounded-xl p-4 inline-block shadow-md border border-[var(--border)] mb-5">
               <canvas ref={canvasRef} className="mx-auto" />
             </div>
 

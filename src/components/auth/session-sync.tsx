@@ -13,22 +13,17 @@ export default function SessionSync() {
   const fetched = useRef(false)
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (status === 'loading' || fetched.current) return
+    fetched.current = true
 
     if (session?.user) {
       setCurrentUser(session.user)
-      if (!fetched.current) {
-        fetched.current = true
-        fetchItems()
-        fetchFavorites()
-        fetchRequests()
-      }
+      fetchItems()
+      fetchFavorites()
+      fetchRequests()
     } else {
       setCurrentUser(null)
-      if (!fetched.current) {
-        fetched.current = true
-        fetchItems()
-      }
+      fetchItems()
     }
   }, [session, status, setCurrentUser, fetchItems, fetchFavorites, fetchRequests])
 
